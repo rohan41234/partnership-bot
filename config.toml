@@ -1,0 +1,309 @@
+# ===========================================================================
+#  PARTNERSHIP BOT — configuration
+# ===========================================================================
+#
+#  1. Copy this file to  config.toml
+#  2. Turn on Developer Mode in Discord:
+#        User Settings → Advanced → Developer Mode
+#     Then right-click any channel/role → "Copy Channel ID" / "Copy Role ID"
+#  3. Paste the IDs below (they are plain numbers, no quotes)
+#  4. Save, then restart the bot — or run  /reloadconfig  in Discord
+#
+#  Anything set to 0 is treated as "not set / disabled".
+# ===========================================================================
+
+
+# Right-click your server name → Copy Server ID
+guild_id = 0
+
+# Master switch. false = bot stays online but ignores invite links.
+enabled = true
+
+
+# ---------------------------------------------------------------------------
+[channels]
+# ---------------------------------------------------------------------------
+
+# REQUIRED — the channel partners post their invite links in.
+partnership = 0
+
+# Where the private partnership threads get created.
+# 0 = create them in the partnership channel above.
+threads = 0
+
+# Audit log: one message per approval / rejection. 0 = off.
+logs = 0
+
+# Live leaderboard. The bot posts ONE message here and keeps editing it.
+# Give it its own channel and deny @everyone "Send Messages". 0 = off.
+leaderboard = 0
+
+# Weekly results are posted here when the leaderboard resets. 0 = off.
+weekly_results = 0
+
+# Quota tracker. Every time a partnership is approved the bot posts the
+# staff member's progress here ("3/5 this week, 2 to go"). 0 = off.
+quota = 0
+
+
+# ---------------------------------------------------------------------------
+[roles]
+# ---------------------------------------------------------------------------
+
+# REQUIRED — "higher staff". These are added to every private thread, pinged
+# there, and are the only ones who can press Approve / Reject.
+approver = 0
+
+# OPTIONAL — leave at 0 if you only want one role.
+# This role is NOT added to threads and is NOT pinged. It only decides who may
+# use staff-only commands (/quota list, /history, the staff roster). When it's
+# 0, the approver role is treated as staff.
+staff = 0
+
+# Pinged when the weekly results are posted. 0 = no ping.
+weekly_ping = 0
+
+
+# ---------------------------------------------------------------------------
+[points]
+# ---------------------------------------------------------------------------
+
+# Awarded to the staff member who posted the partnership link.
+staff = 2
+
+# Awarded to the higher staff member who approves it. 0 = approvers earn nothing.
+approver = 1
+
+
+# ---------------------------------------------------------------------------
+[proof]
+# ---------------------------------------------------------------------------
+
+# true  = the Approve button stays locked until a screenshot is posted
+#         in the thread. Recommended.
+# false = approvers can approve at any time.
+required = true
+
+# true  = only a real uploaded file counts as proof. Recommended.
+# false = a pasted image LINK also counts — which means anyone can satisfy
+#         the proof requirement with any image on the internet, including
+#         the screenshot from somebody else's approved partnership.
+attachment_only = true
+
+
+# ---------------------------------------------------------------------------
+[threads]
+# ---------------------------------------------------------------------------
+
+# How long a thread stays active with no messages.
+# Allowed: 60 (1h), 1440 (1d), 4320 (3d), 10080 (7d)
+auto_archive_minutes = 10080
+
+# ---- Who gets ADDED to the private thread ---------------------------------
+# A private thread is invisible to anyone who hasn't been added. The poster
+# is ALWAYS added. Beyond that:
+
+# Members of the approver role. On — they're the ones who review it.
+add_approver_role = true
+
+# Members of the staff role. OFF — staff don't need to sit in every thread,
+# and adding 40 people to every partnership is a lot of noise for them.
+add_staff_role = false
+
+# Safety cap on how many members get added per thread (avoids rate limits).
+max_members_added = 40
+
+# NOTE: anyone with the "Manage Threads" permission can see private threads
+# regardless of this setting. That's a Discord rule — no bot can override it.
+
+# ---- Who gets PINGED when the thread opens --------------------------------
+# Being added to the thread and being pinged are separate things. Staff are
+# still added (add_staff above) so they can see it — they just don't get a
+# notification unless you turn ping_staff_role on.
+
+# The person who posted the invite link. They owe the screenshot.
+ping_poster = true
+
+# The whole staff role. Off by default — it's the noisiest ping in the bot
+# and most staff don't need to act on someone else's partnership.
+ping_staff_role = false
+
+# The approver role. On, because these are the people who must act.
+ping_approver_role = true
+
+
+# ---------------------------------------------------------------------------
+[duplicates]
+# ---------------------------------------------------------------------------
+# When someone posts a link that already has an open thread:
+#   • the ORIGINAL poster gets a reply containing their thread link
+#   • everyone else is told it exists, with NO link and NO thread id
+
+# Seconds before that notice deletes itself. 0 = keep it forever.
+hide_after_seconds = 15
+
+# Also delete the duplicate link itself, if the poster doesn't own it.
+# Never deletes your own re-post, and never deletes a message that also
+# contained a NEW link. Needs the Manage Messages permission.
+delete_duplicate_message = true
+
+
+# ---------------------------------------------------------------------------
+[leaderboard]
+# ---------------------------------------------------------------------------
+
+enabled = true
+
+# Seconds between refreshes. Minimum 30. The bot only actually edits the
+# message when the standings changed, so a low value is cheap.
+interval_seconds = 60
+
+# How many people to show on the board. 3-15.
+top = 10
+
+
+# ---------------------------------------------------------------------------
+[weekly_reset]
+# ---------------------------------------------------------------------------
+# Every week the board is archived, the results are posted to
+# [channels] weekly_results, and the weekly scores go back to zero.
+# Lifetime totals are kept separately and are never reset.
+
+enabled = true
+
+# monday / tuesday / wednesday / thursday / friday / saturday / sunday
+day = "monday"
+
+# 24-hour HH:MM, in the timezone below.
+time = "00:00"
+
+# IANA timezone name, e.g. "Asia/Dhaka", "UTC", "America/New_York"
+timezone = "Asia/Dhaka"
+
+# How many people to list in the weekly results post. 3-25.
+top = 10
+
+# NOTE: the all-time leaderboard (/leaderboard scope:lifetime) is always kept.
+# A weekly reset only clears the weekly table, never the lifetime one.
+
+
+# --------------------------------------------------------------------- #
+#  Anti mass-ping filter
+# --------------------------------------------------------------------- #
+# Deletes messages containing @everyone / @here. This runs BEFORE anything
+# else, so a partnership ad that mass-pings never gets a thread.
+#
+# Honest warning: Discord sends the notification the instant the message is
+# posted. A bot cannot un-send it — it can only delete the message after the
+# fact. The real fix is removing "Mention @everyone, @here, and All Roles"
+# from the @everyone role. Run /fixpings and the bot will do that for you.
+[antiping]
+enabled = true
+
+# "partnership" = only the partnership channel + its threads.
+# "all"         = every channel in the server.
+scope = "partnership"
+
+# Also block @here, not just @everyone.
+block_here = true
+
+# Also block pings of roles that aren't staff / approver / weekly_ping.
+block_role_pings = false
+
+# Delete the offending message (needs Manage Messages).
+delete_message = true
+
+# Auto-hide the "mass ping removed" notice after N seconds. 0 = keep it.
+notice_hide_after_seconds = 15
+
+# ---- Who is allowed to mass ping ------------------------------------- #
+# Default: the server owner, and nobody else. Admins and approvers DO get
+# their pings deleted unless you flip their switch on below.
+
+# You. The person who owns the server — never filtered.
+exempt_owner = true
+
+# Anyone with the Administrator permission. Off: a rogue admin still gets
+# filtered. Note Discord itself always lets admins ping regardless of
+# channel permissions, so this only controls whether the bot deletes it.
+exempt_admins = false
+
+# Anyone with the approver role (or Manage Server).
+exempt_approvers = false
+
+# Extra individual user IDs that may mass ping. Example: [123, 456]
+exempt_users = []
+
+
+# --------------------------------------------------------------------- #
+#  What happens after approve / reject
+# --------------------------------------------------------------------- #
+[on_decision]
+# Delete the partnership thread once a decision is made.
+delete_thread_on_approve = true
+delete_thread_on_reject = true
+
+# Countdown before the thread disappears, so people can read the result.
+# 0 = delete immediately. Max 3600.
+delete_thread_after_seconds = 15
+
+# Also delete the original ad message in the partnership channel when the
+# partnership is rejected. Approved ads are always kept.
+delete_ad_on_reject = true
+
+
+# --------------------------------------------------------------------- #
+#  Partner cooldown
+# --------------------------------------------------------------------- #
+# Stops the same partner server being farmed over and over for points.
+[cooldown]
+enabled = true
+
+# Hours before the same partner server can be posted again. 0 = no limit.
+hours = 24
+
+# Delete the repost and reply with the remaining time.
+delete_message = true
+notice_hide_after_seconds = 20
+
+
+# --------------------------------------------------------------------- #
+#  Storage housekeeping
+# --------------------------------------------------------------------- #
+# Keeps the SQLite file small on a tiny free-tier disk. Points and the
+# lifetime leaderboard are NEVER pruned — only old records are.
+[storage]
+# Delete closed partnership records older than this. 0 = keep forever.
+keep_partnership_days = 90
+
+# Delete point-log rows older than this. 0 = keep forever.
+keep_point_log_days = 30
+
+
+# --------------------------------------------------------------------- #
+#  Weekly quota
+# --------------------------------------------------------------------- #
+# After every approval the bot posts in [channels] quota telling that staff
+# member how many they've done this week and how many are left. Progress
+# resets together with the weekly leaderboard.
+[quota]
+enabled = true
+
+# How many each staff member is expected to do per week. 0 = no quota.
+target = 5
+
+# What counts toward it:
+#   "partnerships" = approved partnerships (recommended)
+#   "points"       = points earned, so approving also counts
+count = "partnerships"
+
+# Mention the staff member in the quota message.
+ping_member = true
+
+# Keep posting after they've already hit the target (shows how far over).
+# false = the channel goes quiet once someone is done for the week.
+announce_complete = true
+
+# Also drop a copy of the progress message inside the partnership thread.
+# Off by default — the thread is usually deleted seconds later anyway.
+also_post_in_thread = false
